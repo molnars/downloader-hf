@@ -63,8 +63,8 @@ def upload_to_s3(file_content, file_name, bucket_name, s3_client):
 
 if __name__ == "__main__":
 
-    access_key = "Jw5nqrH4cHmeQTPYjjoZ"
-    secret_key = "IbY33upGirAzDHaF0bKeoKI6C6fwo8uwjvMRMDPx"
+    access_key = "<<REPLACEME>>"
+    secret_key = "<<REPLACEME>>"
     s3_client = boto3.client('s3', endpoint_url=s3_url, aws_access_key_id=access_key, aws_secret_access_key=secret_key)
     
     # List model files
