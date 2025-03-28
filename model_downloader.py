@@ -8,6 +8,7 @@ proxy_url = os.getent("HTTPS_PROXY","http://172.24.109.67:8080")  # Replace with
 bucket_name = os.getenv("MODEL_BUCKET","ods-model2")  # Replace with your S3 bucket name
 s3_url=os.getenv("S3_ENDPOINT_URL","http://minio-service.nonprod-oai-app1.svc.cluster.local:9000")
 proxies = None
+models_dir = os.getenv("MODEL_DIR","models")
 
 def list_model_files(model_id, proxy_url):
     # Hugging Face API endpoint for model info
@@ -87,5 +88,5 @@ if __name__ == "__main__":
             
             if file_content is not None:
                 # Upload the file to S3
-                upload_to_s3(file_content, f"models/{model_id}/{file_name}", bucket_name, s3_client)
+                upload_to_s3(file_content, f"{models_dir}/{model_id}/{file_name}", bucket_name, s3_client)
     print(f"upload done")
