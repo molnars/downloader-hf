@@ -13,10 +13,7 @@ def list_model_files(model_id, proxy_url):
     url = f"https://huggingface.co/api/models/{model_id}"
     
     # Set up the proxy configuration
-    proxies = {
-        'http': proxy_url,
-        'https': proxy_url
-    }
+    proxies = {'http': proxy_url,'https': proxy_url} if proxy_url else None
     
     try:
         # Make a GET request to the Hugging Face API
