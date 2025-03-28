@@ -4,7 +4,7 @@ import os
 import tempfile
 
 model_id = os.getenv("MODEL_ID","nomic-ai/nomic-embed-text-v1.5") #"bert-base-uncased"  # Replace with the desired model ID
-proxy_url = os.getent("HTTPS_PROXY","http://172.24.109.67:8080")  # Replace with your proxy URL and port
+proxy_url = os.getenv("HTTPS_PROXY","http://172.24.109.67:8080")  # Replace with your proxy URL and port
 bucket_name = os.getenv("MODEL_BUCKET","ods-model2")  # Replace with your S3 bucket name
 s3_url=os.getenv("S3_ENDPOINT_URL","http://minio-service.nonprod-oai-app1.svc.cluster.local:9000")
 proxies = None
@@ -36,7 +36,7 @@ def list_model_files(model_id, proxy_url):
 def download_file(file_url, proxy_url):
     try:
         # Set up the proxy configuration
-        proxies = {'http': proxy_url,'https': proxy_url} if proxy_url else None
+        #proxies = {'http': proxy_url,'https': proxy_url} if proxy_url else None
         #proxies = {
         #    'http': proxy_url,
         #    'https': proxy_url
