@@ -3,17 +3,18 @@ import boto3
 import os
 import tempfile
 
-model_id = "nomic-ai/nomic-embed-text-v1.5" #"bert-base-uncased"  # Replace with the desired model ID
-proxy_url = "http://172.24.109.67:8080"  # Replace with your proxy URL and port
-bucket_name = "ods-model2"  # Replace with your S3 bucket name
-s3_url="http://minio-service.nonprod-oai-app1.svc.cluster.local:9000"
+model_id = os.getenv("MODEL_ID","nomic-ai/nomic-embed-text-v1.5") #"bert-base-uncased"  # Replace with the desired model ID
+proxy_url = os.getent("HTTPS_PROXY","http://172.24.109.67:8080")  # Replace with your proxy URL and port
+bucket_name = os.getenv("MODEL_BUCKET","ods-model2")  # Replace with your S3 bucket name
+s3_url=os.getenv("S3_ENDPOINT_URL","http://minio-service.nonprod-oai-app1.svc.cluster.local:9000")
+proxies = None
 
 def list_model_files(model_id, proxy_url):
     # Hugging Face API endpoint for model info
     url = f"https://huggingface.co/api/models/{model_id}"
     
     # Set up the proxy configuration
-    proxies = {'http': proxy_url,'https': proxy_url} if proxy_url else None
+    #proxies = {'http': proxy_url,'https': proxy_url} if proxy_url else None
     
     try:
         # Make a GET request to the Hugging Face API
@@ -34,10 +35,11 @@ def list_model_files(model_id, proxy_url):
 def download_file(file_url, proxy_url):
     try:
         # Set up the proxy configuration
-        proxies = {
-            'http': proxy_url,
-            'https': proxy_url
-        }
+	proxies = {'http': proxy_url,'https': proxy_url} if proxy_url else None
+        #proxies = {
+        #    'http': proxy_url,
+        #    'https': proxy_url
+        #}
         
         # Make a GET request to download the file
         response = requests.get(file_url, proxies=proxies)
@@ -60,10 +62,12 @@ def upload_to_s3(file_content, file_name, bucket_name, s3_client):
 
 if __name__ == "__main__":
 
-    access_key = "<<REPLACEME>>"
-    secret_key = "<<REPLACEME>>"
+    access_key = os.getenv("AWS_ACCESS_KEY","<<REPLACEME>>")
+    secret_key = os.getenv("AWS_SECRET_KEY","<<REPLACEME>>")
     s3_client = boto3.client('s3', endpoint_url=s3_url, aws_access_key_id=access_key, aws_secret_access_key=secret_key)
-    
+    proxies = {'http': proxy_url,'https': proxy_url} if proxy_url else None
+
+	
     # List model files
     files = list_model_files(model_id, proxy_url)
 	
