@@ -36,7 +36,7 @@ def list_model_files(model_id, proxy_url):
 def download_file(file_url, proxy_url):
     try:
         # Set up the proxy configuration
-	proxies = {'http': proxy_url,'https': proxy_url} if proxy_url else None
+        proxies = {'http': proxy_url,'https': proxy_url} if proxy_url else None
         #proxies = {
         #    'http': proxy_url,
         #    'https': proxy_url
