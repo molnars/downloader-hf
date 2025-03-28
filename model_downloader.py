@@ -9,6 +9,9 @@ bucket_name = os.getenv("MODEL_BUCKET","ods-model2")  # Replace with your S3 buc
 s3_url=os.getenv("S3_ENDPOINT_URL","http://minio-service.nonprod-oai-app1.svc.cluster.local:9000")
 proxies = None
 models_dir = os.getenv("MODEL_DIR","models")
+hf_token = os.getenv("HF_TOKEN","")
+headers = {}
+count =0
 
 def list_model_files(model_id, proxy_url):
     # Hugging Face API endpoint for model info
@@ -19,7 +22,7 @@ def list_model_files(model_id, proxy_url):
     
     try:
         # Make a GET request to the Hugging Face API
-        response = requests.get(url, proxies=proxies)
+        response = requests.get(url, headers=headers, proxies=proxies)
         response.raise_for_status()  # Raise an error for bad responses
         
         # Parse the JSON response
@@ -43,7 +46,7 @@ def download_file(file_url, proxy_url):
         #}
         
         # Make a GET request to download the file
-        response = requests.get(file_url, proxies=proxies)
+        response = requests.get(file_url, headers=headers, proxies=proxies)
         response.raise_for_status()  # Raise an error for bad responses
         
         return response.content
@@ -56,10 +59,10 @@ def upload_to_s3(file_content, file_name, bucket_name, s3_client):
     try:
         # Upload the file content to the S3 bucket
         s3_client.put_object(Bucket=bucket_name, Key=file_name, Body=file_content)
-        print(f"Successfully uploaded {file_name} to {bucket_name}")
+        print(f"Successfully uploaded {count} - {file_name} to {bucket_name}")
     
     except Exception as e:
-        print(f"An error occurred while uploading {file_name} to {bucket_name}: {e}")
+        print(f"An error occurred while uploading {count} - {file_name} to {bucket_name}: {e}")
 
 if __name__ == "__main__":
 
@@ -67,7 +70,8 @@ if __name__ == "__main__":
     secret_key = os.getenv("AWS_SECRET_KEY","<<REPLACEME>>")
     s3_client = boto3.client('s3', endpoint_url=s3_url, aws_access_key_id=access_key, aws_secret_access_key=secret_key)
     proxies = {'http': proxy_url,'https': proxy_url} if proxy_url else None
-
+    if hf_token:
+         headers['Authorization'] = f'Bearer: {hf_token}'
 	
     # List model files
     files = list_model_files(model_id, proxy_url)
@@ -82,7 +86,7 @@ if __name__ == "__main__":
         for file_name in files:
             # Construct the file URL
             file_url = f"https://huggingface.co/{model_id}/resolve/main/{file_name}"
-            
+            count = count +1
             # Download the file
             file_content = download_file(file_url, proxy_url)
             
